@@ -1,0 +1,7 @@
+{
+    "name": "lenovo/intuji-assignment",
+    "type": "project",
+    "require": {
+        "google/apiclient": "^2.0"
+    }
+}
