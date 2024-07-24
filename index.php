@@ -1,22 +1,26 @@
 <?php
 
-require 'core/calendar.php';
+    require 'core/calendar.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['create_event'])) {
-        $summary = $_POST['summary'];
-        $startDateTime = $_POST['start_datetime'];
-        $endDateTime = $_POST['end_datetime'];
-        createEvent($summary, $startDateTime, $endDateTime);
+    if($_SERVER['REQUEST_METHOD'] === 'POST')
+    {
+        if(isset($_POST['create_event']))
+        {
+            $summary = $_POST['summary'];
+            $startDateTime = $_POST['start_datetime'];
+            $endDateTime = $_POST['end_datetime'];
+            createEvent($summary, $startDateTime, $endDateTime);
+        }
+
+        if(isset($_POST['delete_event']))
+        {
+            $eventId = $_POST['event_id'];
+            deleteEvent($eventId);
+        }
     }
 
-    if (isset($_POST['delete_event'])) {
-        $eventId = $_POST['event_id'];
-        deleteEvent($eventId);
-    }
-}
+    $events = listEvents();
 
-$events = listEvents();
 ?>
 
 <!DOCTYPE html>
@@ -25,9 +29,9 @@ $events = listEvents();
     <title>Google Calendar Integration</title>
 </head>
 <body>
-
+    
     <h1>Google Calendar Events</h1>
-
+    
     <form method="post">
         <h2>Create Event</h2>
         <input type="text" name="summary" placeholder="Event Summary" required>
@@ -37,9 +41,9 @@ $events = listEvents();
     </form>
 
     <h2>List Events</h2>
-
+    
     <ul>
-        <?php foreach ($events as $event): ?>
+        <?php foreach($events as $event): ?>
             <li>
                 <?php echo $event->getSummary(); ?> - <?php echo $event->getStart()->getDateTime(); ?>
                 <form method="post" style="display:inline;">
@@ -49,8 +53,8 @@ $events = listEvents();
             </li>
         <?php endforeach; ?>
     </ul>
-
-    <form action="disconnect.php" method="post">
+    
+    <form action="core/disconnect.php" method="post">
         <button type="submit">Disconnect</button>
     </form>
 

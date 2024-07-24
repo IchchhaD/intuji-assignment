@@ -1,80 +1,117 @@
 <?php
 
-require 'vendor/autoload.php';
-require 'config/config.php';
-require 'config/dbconnect.php';
+    require 'vendor/autoload.php';
+    require 'config/config.php';
 
-session_start();
+    session_start();
 
-$client = new Google_Client();
-$client->setClientId(CLIENT_ID);
-$client->setClientSecret(CLIENT_SECRET);
-$client->setRedirectUri(REDIRECT_URI);
-$client->addScope(Google_Service_Calendar::CALENDAR);
+    $client = new Google_Client();
+    $client->setClientId(CLIENT_ID);
+    $client->setClientSecret(CLIENT_SECRET);
+    $client->setRedirectUri(REDIRECT_URI);
+    $client->addScope(Google_Service_Calendar::CALENDAR);
+    $client->addScope(Google_Service_Calendar::CALENDAR_EVENTS);
 
-if(isset($_SESSION['user_id']))
-{
-    $user_id = $_SESSION['user_id'];
-    $pdo = dbConnect();
-    
-    $stmt = $pdo->prepare("SELECT access_token, refresh_token, token_expires FROM user_tokens WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    $tokenData = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if($tokenData)
+
+    if(isset($_SESSION['access_token']))
     {
-        $accessToken = json_decode($tokenData['access_token'], true);
-        
-        if ($tokenData['token_expires'] < time())
-        {
-            $client->fetchAccessTokenWithRefreshToken($tokenData['refresh_token']);
-            $accessToken = $client->getAccessToken();
-            $stmt = $pdo->prepare("UPDATE user_tokens SET access_token = ?, token_expires = ? WHERE user_id = ?");
-            $stmt->execute([json_encode($accessToken), $accessToken['expires_in'] + time(), $user_id]);
-        }
-        
-        $client->setAccessToken($accessToken);
+        $client->setAccessToken($_SESSION['access_token']);
     }
     else
     {
         header('Location: config/auth.php');
         exit();
     }
-}
-else
-{
-    header('Location: config/auth.php');
-    exit();
-}
 
-$service = new Google_Service_Calendar($client);
+    $service = new Google_Service_Calendar($client);
+    
+    function formatDateTime($inputDateTime, $timezone = 'Asia/Kathmandu')
+    {
+        $date = DateTime::createFromFormat('Y-m-d\TH:i', $inputDateTime);
+        
+        if(!$date)
+        {
+            throw new Exception('Invalid date-time format');
+        }
+        
+        $date->setTimezone(new DateTimeZone($timezone));
+        
+        return $date->format('Y-m-d\TH:i:sP');
+    }
 
-function listEvents()
-{
-    global $service;
-    $calendarId = 'primary';
-    $optParams = array('maxResults' => 10, 'orderBy' => 'startTime', 'singleEvents' => true);
-    $results = $service->events->listEvents($calendarId, $optParams);
-    return $results->getItems();
-}
+    function listEvents()
+    {
+        global $service;
+        $calendarId = 'primary';
+        $optParams = array('orderBy' => 'updated', 'maxResults' => 10, 'singleEvents' => true);
+        $results = $service->events->listEvents($calendarId, $optParams);
+        return $results->getItems();        
+    }
+    
+    function createEvent($summary, $startDateTime, $endDateTime)
+    {
+        global $service;
+        
+        $new_startDateTime = formatDateTime($startDateTime);
+        $new_endDateTime = formatDateTime($endDateTime);
+        
+        $isTimedEvent = strpos($new_startDateTime, 'T') !== false && strpos($new_endDateTime, 'T') !== false;
+    
+        $eventArray = array(
+            'summary' => $summary,
+        );
+    
+        if($isTimedEvent)
+        {
+            $eventArray['start'] = array(
+                'dateTime' => $new_startDateTime,
+                'timeZone' => 'Asia/Kathmandu',
+            );
+            $eventArray['end'] = array(
+                'dateTime' => $new_endDateTime,
+                'timeZone' => 'Asia/Kathmandu',
+            );
+        }
+        else
+        {
+            $eventArray['start'] = array(
+                'date' => $new_startDateTime,
+            );
+            $eventArray['end'] = array(
+                'date' => $new_endDateTime,
+            );
+        }
+    
+        $event = new Google_Service_Calendar_Event($eventArray);
+        $calendarId = 'primary';
+    
+        try
+        {
+            $createdEvent = $service->events->insert($calendarId, $event);
+            return $createdEvent;
+        }
+        catch(Google_Service_Exception $e)
+        {
+            $error = $e->getErrors();
+            error_log('Google API Error: ' . print_r($error, true));
+            echo 'Error creating event: ' . $e->getMessage();
+            return null;
+        }
+        catch(Exception $e)
+        {
+            error_log('General Error: ' . $e->getMessage());
+            echo 'An unexpected error occurred: ' . $e->getMessage();
+            return null;
+        }
+    }
+    
+    
 
-function createEvent($summary, $startDateTime, $endDateTime)
-{
-    global $service;
-    $event = new Google_Service_Calendar_Event(array(
-        'summary' => $summary,
-        'start' => array('dateTime' => $startDateTime),
-        'end' => array('dateTime' => $endDateTime)
-    ));
-    $calendarId = 'primary';
-    return $service->events->insert($calendarId, $event);
-}
-
-function deleteEvent($eventId)
-{
-    global $service;
-    $calendarId = 'primary';
-    return $service->events->delete($calendarId, $eventId);
-}
+    function deleteEvent($eventId)
+    {
+        global $service;
+        $calendarId = 'primary';
+        return $service->events->delete($calendarId, $eventId);
+    }
 
 ?>
