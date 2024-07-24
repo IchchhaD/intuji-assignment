@@ -1,5 +1,7 @@
 <?php
 
+//disconnect calendar
+
     session_start();
     session_unset();
     session_destroy();

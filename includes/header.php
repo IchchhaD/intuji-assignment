@@ -1,3 +1,4 @@
+<!-- header for all view files-->
 <!DOCTYPE html>
 <html>
 <head>

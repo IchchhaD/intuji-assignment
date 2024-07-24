@@ -3,6 +3,8 @@
 require '../vendor/autoload.php';
 require 'config.php';
 
+//trigger signing in to google process to link calendar
+
     session_start();
 
     $client = new Google_Client();
