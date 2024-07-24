@@ -1,0 +1,51 @@
+body
+{
+    background-color: antiquewhite;
+}
+.dash-link
+{
+    margin: 1%;
+    float:right;
+}
+.main-container
+{
+    background-color: #fff;
+    margin-top: 10%;
+    margin-bottom: 10%;;
+    width:500px;
+    padding:50px;
+    border-radius: 25px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+h1
+{
+    font-family: Arial;
+    text-align: center;
+}
+.link-container
+{
+    margin: auto;
+    width:400px;
+    padding: 10px;
+}
+a.link-btn
+{
+    margin:1%;
+    width:46%;
+}
+.btn-disconnect
+{
+    margin: 0 auto;
+    width: fit-content;
+    padding: 10px;
+}
+.list-container
+{
+    background-color: #fff;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    width:700px;
+    padding:50px;
+    border-radius: 25px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
