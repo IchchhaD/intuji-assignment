@@ -6,13 +6,11 @@
     
     if(isset($_SESSION['access_token']))
     {
-        $btn_a_content = "Connected to Calendar";
         $btn_b_content = "Disconnect from Calendar";
     }
     else
     {
         $btn_b_content = "Connected to Calendar";
-        $btn_a_content = "Disconnect from Calendar";
     }
 
 ?>
@@ -22,14 +20,6 @@
         <div class="row">
             <div class="col-12">
                 <h1>My Google Calendar Events</h1>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-4 link-container">
-                <form action="core/connect.php" class="btn-disconnect" method="post">
-                    <button type="submit" class="btn btn-primary"><?php echo $btn_a_content; ?></button>
-                </form>
             </div>
         </div>
 
