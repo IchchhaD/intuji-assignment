@@ -11,8 +11,7 @@
     $client->setRedirectUri(REDIRECT_URI);
     $client->addScope(Google_Service_Calendar::CALENDAR);
     $client->addScope(Google_Service_Calendar::CALENDAR_EVENTS);
-
-
+    
     if(isset($_SESSION['access_token']))
     {
         $client->setAccessToken($_SESSION['access_token']);
@@ -88,7 +87,14 @@
         try
         {
             $createdEvent = $service->events->insert($calendarId, $event);
-            return $createdEvent;
+            if($createdEvent)
+            {
+                header('Location: ../views/create.php?status=success');
+            }
+            else
+            {
+                header('Location: ../views/create.php?status=fail');
+            }
         }
         catch(Google_Service_Exception $e)
         {
@@ -111,7 +117,15 @@
     {
         global $service;
         $calendarId = 'primary';
-        return $service->events->delete($calendarId, $eventId);
+        $deletedEvent = $service->events->delete($calendarId, $eventId);
+        if($deletedEvent)
+            {
+                header('Location: ../views/list.php?status=success');
+            }
+            else
+            {
+                header('Location: ../views/list.php?status=fail');
+            }
     }
 
 ?>

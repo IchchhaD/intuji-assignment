@@ -18,9 +18,28 @@
         }
     }
 
+    if(isset($_GET['status']) && $_GET['status']=="success")
+    {
+        $message = "Event Successfully Created";
+    }
+    else if(isset($_GET['status']) && $_GET['status']=="fail")
+    {
+        $message = "Event Creation Failed";
+    }
+    else
+    {
+        $message = "";
+    }
+
+
 ?>
 
     <div class="container main-container">
+        <div class="row" style="background: #43eb34; padding 5px">
+            <div class="col-12">
+                <?php echo $message; ?>
+            </div>
+        </div>
         <div class="row">
             <div class="col-12">
                 <div class="container mt-3">

@@ -17,6 +17,19 @@
         $new_date = $o_date->format('Y-m-d H:i');
         return $new_date;
     }
+
+    if(isset($_GET['status']) && $_GET['status']=="success")
+    {
+        $message = "Event Successfully Deleted";
+    }
+    else if(isset($_GET['status']) && $_GET['status']=="fail")
+    {
+        $message = "Event Deletion Failed";
+    }
+    else
+    {
+        $message = "";
+    }
 ?>
 
 <div class="container list-container">
@@ -24,6 +37,12 @@
     <div class="row">
         <div class="col-12">
             <h2>List Events</h2>
+        </div>
+    </div>
+
+    <div class="row" style="background: #f56b56; padding 5px">
+        <div class="col-12">
+            <?php echo $message; ?>
         </div>
     </div>
 
