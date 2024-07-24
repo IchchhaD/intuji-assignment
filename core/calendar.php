@@ -24,6 +24,7 @@
 
     $service = new Google_Service_Calendar($client);
     
+    //function to format date according to Google Calendar Format
     function formatDateTime($inputDateTime, $timezone = 'Asia/Kathmandu')
     {
         $date = DateTime::createFromFormat('Y-m-d\TH:i', $inputDateTime);
@@ -37,16 +38,16 @@
         
         return $date->format('Y-m-d\TH:i:sP');
     }
-
+    //function to list 25 events
     function listEvents()
     {
         global $service;
         $calendarId = 'primary';
-        $optParams = array('orderBy' => 'updated', 'maxResults' => 10, 'singleEvents' => true);
+        $optParams = array('orderBy' => 'updated', 'maxResults' => 25, 'singleEvents' => true);
         $results = $service->events->listEvents($calendarId, $optParams);
         return $results->getItems();        
     }
-    
+    //function to create new event
     function createEvent($summary, $startDateTime, $endDateTime)
     {
         global $service;
@@ -54,12 +55,13 @@
         $new_startDateTime = formatDateTime($startDateTime);
         $new_endDateTime = formatDateTime($endDateTime);
         
+        //check if the event is timed
         $isTimedEvent = strpos($new_startDateTime, 'T') !== false && strpos($new_endDateTime, 'T') !== false;
     
         $eventArray = array(
             'summary' => $summary,
         );
-    
+        
         if($isTimedEvent)
         {
             $eventArray['start'] = array(
@@ -83,7 +85,7 @@
     
         $event = new Google_Service_Calendar_Event($eventArray);
         $calendarId = 'primary';
-    
+        //creating event
         try
         {
             $createdEvent = $service->events->insert($calendarId, $event);
@@ -111,8 +113,7 @@
         }
     }
     
-    
-
+    //function to delete event
     function deleteEvent($eventId)
     {
         global $service;

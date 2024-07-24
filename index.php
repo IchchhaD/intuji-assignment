@@ -22,7 +22,7 @@
                 <h1>My Google Calendar Events</h1>
             </div>
         </div>
-
+        <!-- links to go to lisitng of events and creation of events-->
         <div class="row">
             <div class="col-4 link-container">
                 <form action="core/connect.php" class="btn-disconnect" method="post">
@@ -37,7 +37,7 @@
                 <a href="views/create.php" class="btn btn-warning link-btn">Create New Events</a>
             </div>
         </div>
-
+        <!--triggers disconnection of calendar-->
         <div class="row">
             <div class="col-4 link-container">
                 <form action="core/disconnect.php" class="btn-disconnect" method="post">

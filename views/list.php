@@ -1,5 +1,7 @@
 <?php
 
+//frontend for listing events
+
     require '../includes/header.php';
     require '../core/calendar.php';
     
